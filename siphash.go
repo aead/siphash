@@ -14,7 +14,7 @@ package siphash // import "github.com/aead/siphash"
 
 import "crypto/subtle"
 
-// The size of the SipHash authentication tag in bytes.
+// TagSize is the size of the SipHash authentication tag in bytes.
 const TagSize = 8
 
 // The four initialization constants
