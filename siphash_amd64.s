@@ -23,8 +23,8 @@
 // core(hVal *[4]uint64, msg []byte)
 TEXT ·core(SB),4,$0-32
 	MOVQ hVal+0(FP), AX
-	MOVQ msg+16(FP), BX
-	MOVQ msg+8(FP), CX
+	MOVQ msg_len+16(FP), BX
+	MOVQ msg_base+8(FP), CX
 	MOVQ 0(AX), R9
 	MOVQ 8(AX), R10
 	MOVQ 16(AX), R11
