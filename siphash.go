@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 // Package siphash implements a hash / MAC function
-// developed Jean-Philippe Aumasson and Daniel J Bernstein
-// in 2012. SipHash computes 64-bit message authentication
+// developed Jean-Philippe Aumasson and Daniel Bernstein.
+// SipHash computes a 64-bit message authentication
 // code from a variable-length message and a 128-bit secret
 // key. It was designed to be efficient even for short inputs,
 // with performance comparable to non-cryptographic hash
@@ -12,10 +12,19 @@
 // recommended parameters: c = 2 and d = 4.
 package siphash // import "github.com/aead/siphash"
 
-import "crypto/subtle"
+import (
+	"crypto/subtle"
+	"encoding/binary"
+	"errors"
+	"hash"
+)
 
-// TagSize is the size of the SipHash authentication tag in bytes.
-const TagSize = 8
+const (
+	// KeySize is the size of the SipHash secret key in bytes.
+	KeySize = 16
+	// TagSize is the size of the SipHash authentication tag in bytes.
+	TagSize = 8
+)
 
 // The four initialization constants
 const (
@@ -24,6 +33,8 @@ const (
 	c2 = uint64(0x6c7967656e657261)
 	c3 = uint64(0x7465646279746573)
 )
+
+var errKeySize = errors.New("siphash: bad key length")
 
 // Verify checks whether the given sum is equal to the
 // computed checksum of msg. This function returns true
@@ -35,8 +46,52 @@ func Verify(sum *[TagSize]byte, msg []byte, key *[16]byte) bool {
 	return subtle.ConstantTimeCompare(sum[:], out[:]) == 1
 }
 
+// Sum generates an authenticator for msg with a 128 bit key
+// and puts the 64 bit result into out.
+func Sum(out *[TagSize]byte, msg []byte, key *[16]byte) {
+	r := Sum64(msg, key)
+	binary.LittleEndian.PutUint64(out[:], r)
+}
+
+// Sum64 generates and returns the 64 bit authenticator
+// for msg with a 128 bit key.
+func Sum64(msg []byte, key *[16]byte) uint64 {
+	k0 := binary.LittleEndian.Uint64(key[:])
+	k1 := binary.LittleEndian.Uint64(key[8:])
+
+	var hVal [4]uint64
+	hVal[0] = k0 ^ c0
+	hVal[1] = k1 ^ c1
+	hVal[2] = k0 ^ c2
+	hVal[3] = k1 ^ c3
+
+	n := len(msg)
+	ctr := byte(n)
+
+	if n >= TagSize {
+		n &= (^(TagSize - 1))
+		core(&hVal, msg[:n])
+		msg = msg[n:]
+	}
+
+	var block [TagSize]byte
+	copy(block[:], msg)
+	block[7] = ctr
+
+	return finalize(&hVal, &block)
+}
+
+// New returns a hash.Hash64 computing the SipHash checksum with a 128 bit key.
+func New(key *[16]byte) hash.Hash64 {
+	h := new(digest)
+	h.key[0] = binary.LittleEndian.Uint64(key[:])
+	h.key[1] = binary.LittleEndian.Uint64(key[8:])
+	h.Reset()
+	return h
+}
+
 // The siphash hash struct implementing hash.Hash
-type hashFunc struct {
+type digest struct {
 	hVal  [4]uint64
 	key   [2]uint64
 	block [TagSize]byte
@@ -44,70 +99,63 @@ type hashFunc struct {
 	ctr   byte
 }
 
-func (h *hashFunc) BlockSize() int { return TagSize }
+func (d *digest) BlockSize() int { return TagSize }
 
-func (h *hashFunc) Size() int { return TagSize }
+func (d *digest) Size() int { return TagSize }
 
-func (h *hashFunc) Reset() {
-	h.hVal[0] = h.key[0] ^ c0
-	h.hVal[1] = h.key[1] ^ c1
-	h.hVal[2] = h.key[0] ^ c2
-	h.hVal[3] = h.key[1] ^ c3
+func (d *digest) Reset() {
+	d.hVal[0] = d.key[0] ^ c0
+	d.hVal[1] = d.key[1] ^ c1
+	d.hVal[2] = d.key[0] ^ c2
+	d.hVal[3] = d.key[1] ^ c3
 
-	h.off = 0
-	h.ctr = 0
+	d.off = 0
+	d.ctr = 0
 }
 
-func (h *hashFunc) Write(p []byte) (int, error) {
+func (d *digest) Write(p []byte) (int, error) {
 	n := len(p)
-	h.ctr += byte(n)
+	d.ctr += byte(n)
 
-	if h.off > 0 {
-		dif := TagSize - h.off
+	if d.off > 0 {
+		dif := TagSize - d.off
 		if n > dif {
-			h.off += copy(h.block[h.off:], p[:dif])
+			d.off += copy(d.block[d.off:], p[:dif])
 			p = p[dif:]
-			core(&(h.hVal), h.block[:])
-			h.off = 0
+			core(&(d.hVal), d.block[:])
+			d.off = 0
 		} else {
-			h.off += copy(h.block[h.off:], p)
+			d.off += copy(d.block[d.off:], p)
 			return n, nil
 		}
 	}
 
 	if nn := len(p); nn >= TagSize {
 		nn &= (^(TagSize - 1))
-		core(&(h.hVal), p[:nn])
+		core(&(d.hVal), p[:nn])
 		p = p[nn:]
 	}
 
 	if len(p) > 0 {
-		h.off = copy(h.block[:], p)
+		d.off = copy(d.block[:], p)
 	}
 	return n, nil
 }
 
-func (h *hashFunc) Sum64() uint64 {
-	hVal := h.hVal
-	block := h.block
-	for i := h.off; i < TagSize-1; i++ {
+func (d *digest) Sum64() uint64 {
+	hVal := d.hVal
+	block := d.block
+	for i := d.off; i < TagSize-1; i++ {
 		block[i] = 0
 	}
-	block[7] = h.ctr
+	block[7] = d.ctr
 	return finalize(&hVal, &block)
 }
 
-func (h *hashFunc) Sum(b []byte) []byte {
-	r := h.Sum64()
+func (d *digest) Sum(b []byte) []byte {
+	r := d.Sum64()
 
 	var out [TagSize]byte
-	out[0] = byte(r)
-	out[1] = byte(r >> 8)
-	out[2] = byte(r >> 16)
-	out[3] = byte(r >> 24)
-	out[4] = byte(r >> 32)
-	out[5] = byte(r >> 40)
-	out[6] = byte(r >> 48)
-	out[7] = byte(r >> 56)
+	binary.LittleEndian.PutUint64(out[:], r)
 	return append(b, out[:]...)
 }

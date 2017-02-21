@@ -30,7 +30,7 @@ func TestSize(t *testing.T) {
 func TestReset(t *testing.T) {
 	var key [16]byte
 	h := New(&key)
-	s, ok := h.(*hashFunc)
+	s, ok := h.(*digest)
 	if !ok {
 		t.Fatal("Impossible situation: New returns no siphash struct")
 	}
