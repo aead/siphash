@@ -2,7 +2,7 @@
 // Use of this source code is governed by a license that can be
 // found in the LICENSE file.
 
-// +build amd64, !appengine, !gccgo
+// +build amd64, !gccgo, !appengine
 
 package siphash
 
@@ -10,4 +10,7 @@ package siphash
 func core(hVal *[4]uint64, msg []byte)
 
 //go:noescape
-func finalize(hVal *[4]uint64, block *[TagSize]byte) uint64
+func finalize64(hVal *[4]uint64, block *[BlockSize]byte) uint64
+
+//go::noescape
+func finalize128(tag *[16]byte, hVal *[4]uint64, block *[BlockSize]byte)
