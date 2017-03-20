@@ -17,10 +17,24 @@ System: Linux Ubuntu 16.04 - kernel: 4.4.0-67-generic
 Go version: 1.8.0  
 ```
 name         speed           cpb
-Write_8-4     688MB/s ± 0%   3,47
-Write_1K-4   2.09GB/s ± 5%   1,11
-Sum64_8-4     244MB/s ± 1%   9,77
-Sum64_1K-4   2.06GB/s ± 0%   1,13
-Sum128_8-4    189MB/s ± 0%  12,62
-Sum128_1K-4  2.03GB/s ± 0%   1,15
+Write_8-4     688MB/s ± 0%   3.47
+Write_1K-4   2.09GB/s ± 5%   1.11
+Sum64_8-4     244MB/s ± 1%   9.77
+Sum64_1K-4   2.06GB/s ± 0%   1.13
+Sum128_8-4    189MB/s ± 0%  12.62
+Sum128_1K-4  2.03GB/s ± 0%   1.15
+```
+
+**386**  
+Hardware: Intel i7-6500U 2.50GHz x 2 - SSE2 SIMD
+System: Linux Ubuntu 16.04 - kernel: 4.4.0-67-generic  
+Go version: 1.8.0  
+```
+name         speed           cpb
+Write_8-4     434MB/s ± 2%   5.44
+Write_1K-4   1.24GB/s ± 1%   1.88
+Sum64_8-4    92.6MB/s ± 4%  25.92
+Sum64_1K-4   1.15GB/s ± 1%   2.03
+Sum128_8-4   61.5MB/s ± 5%  39.09
+Sum128_1K-4  1.10GB/s ± 0%   2.12
 ```
