@@ -26,7 +26,7 @@ Sum128_1K-4  2.03GB/s ± 0%   1.15
 ```
 
 **386**  
-Hardware: Intel i7-6500U 2.50GHz x 2 - SSE2 SIMD
+Hardware: Intel i7-6500U 2.50GHz x 2 - SSE2 SIMD  
 System: Linux Ubuntu 16.04 - kernel: 4.4.0-67-generic  
 Go version: 1.8.0  
 ```
