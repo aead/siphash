@@ -9,8 +9,10 @@ package siphash
 //go:noescape
 func core(hVal *[4]uint64, msg []byte)
 
-//go:noescape
-func finalize64(hVal *[4]uint64, block *[BlockSize]byte) uint64
+func finalize64(hVal *[4]uint64, block *[BlockSize]byte) uint64 {
+	return genericFinalize64(hVal, block)
+}
 
-//go::noescape
-func finalize128(tag *[16]byte, hVal *[4]uint64, block *[BlockSize]byte)
+func finalize128(tag *[16]byte, hVal *[4]uint64, block *[BlockSize]byte) {
+	genericFinalize128(tag, hVal, block)
+}

@@ -17,10 +17,10 @@ System: Linux Ubuntu 16.04 - kernel: 4.4.0-67-generic
 Go version: 1.8.0  
 ```
 name         speed           cpb
-Write_8-4     679MB/s ± 0%   3,51
-Write_1K-4   2.07GB/s ± 0%   1,12
-Sum64_8-4     258MB/s ± 0%   9,24
-Sum64_1K-4   2.00GB/s ± 0%   1,16
-Sum128_8-4   75.7MB/s ± 0%  31,79 
-Sum128_1K-4  1.72GB/s ± 0%   1,35
+Write_8-4     688MB/s ± 0%   3,47
+Write_1K-4   2.09GB/s ± 5%   1,11
+Sum64_8-4     244MB/s ± 1%   9,77
+Sum64_1K-4   2.06GB/s ± 0%   1,13
+Sum128_8-4    189MB/s ± 0%  12,62
+Sum128_1K-4  2.03GB/s ± 0%   1,15
 ```
