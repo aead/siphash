@@ -38,3 +38,18 @@ Sum64_1K-4   1.15GB/s ± 1%   2.03
 Sum128_8-4   61.5MB/s ± 5%  39.09
 Sum128_1K-4  1.10GB/s ± 0%   2.12
 ```
+
+**ARM**  
+Hardware: ARM-Cortex-A7 (ARMv7) 1GHz (912MHz) x 2  
+System:  Linux Ubuntu 14.04.1 - kernel: 3.4.112-sun7i  
+Go version: 1.7.4  
+
+```
+name         speed           cpb
+Write_8-2    43.4MB/s ± 2%  21,97
+Write_1K-2    125MB/s ± 1%   7,63
+Sum64_8-2    6.51MB/s ± 1% 146,49
+Sum64_1K-2    111MB/s ± 1%   8,59 
+Sum128_8-2   3.82MB/s ± 2% 249,65
+Sum128_1K-2   101MB/s ± 1%   9,44
+```
