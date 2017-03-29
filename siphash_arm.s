@@ -40,7 +40,7 @@ TEXT ·core(SB), NOSPLIT, $8-16
 	MOVW    msg+4(FP), R10
 	MOVW    msg_len+8(FP), R11
 
-	MOVM.IA (R8), [R0, R1, R2, R3, R4, R5, R6, R7]
+	MOVM.IA (R8), [R0-R7]
 	ADD     R10, R11, R11
 	MOVW    R11, end-4(SP)
 	AND.S   $3, R10, R8
@@ -59,7 +59,7 @@ loop_aligned:
 	BLO       loop_aligned
 
 	MOVW      hVal+0(FP), R8
-	MOVM.IA   [R0, R1, R2, R3, R4, R5, R6, R7], (R8)
+	MOVM.IA   [R0-R7], (R8)
 	MOVW      sav-8(SP), R10
 	RET
 
@@ -91,6 +91,6 @@ loop_unaligned:
 	BLO     loop_unaligned
 
 	MOVW    hVal+0(FP), R8
-	MOVM.IA [R0, R1, R2, R3, R4, R5, R6, R7], (R8)
+	MOVM.IA [R0-R7], (R8)
 	MOVW    sav-8(SP), R10
 	RET
