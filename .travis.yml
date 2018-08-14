@@ -4,10 +4,12 @@ go:
   - 1.6
   - 1.7
   - 1.8
+  - 1.9
+  - 1.10
 
 env:
   - TRAVIS_GOARCH=amd64
   - TRAVIS_GOARCH=386 
 
 before_install:
-- export GOARCH=$TRAVIS_GOARCH
+  - export GOARCH=$TRAVIS_GOARCH
