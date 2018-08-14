@@ -90,6 +90,18 @@ func TestVectors128(t *testing.T) {
 	}
 }
 
+func TestAlign(t *testing.T) {
+	var key [16]byte
+	copy(key[:], fromHex("30a82d05a9056504051c052cdb6ef976"))
+	msg := fromHex("0076a9143219adce9b6f0a21fd53cb17e2fd9b2b4fac40b388ac")
+	checksum := uint64(16770526497674945769)
+
+	h := Sum64(msg[1:], &key)
+	if h != checksum {
+		t.Fatalf("Expected %v got %v", checksum, h)
+	}
+}
+
 func benchmarkWrite(b *testing.B, size int) {
 	h, _ := New64(make([]byte, KeySize))
 	msg := make([]byte, size)
