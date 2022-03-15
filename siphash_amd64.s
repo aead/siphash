@@ -2,7 +2,8 @@
 // Use of this source code is governed by a license that can be
 // found in the LICENSE file.
 
-// +build amd64, !gccgo, !appengine
+//go:build amd64 && !gccgo && !appengine && !nacl
+// +build amd64,!gccgo,!appengine,!nacl
 
 #define ROUND(v0, v1, v2, v3) \
 	ADDQ v1, v0;  \
